@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "roles": {
+    "captain":      {"login": "LucraTitan",    "id": 268125578, "name": "LucraTitan",      "label": "Captain"},
+    "coder-a":      {"login": "K-Bot-T1",      "id": 290088768, "name": "K-Bot-T1",        "label": "Coder-A"},
+    "coder-b":      {"login": "K-bot-T2",      "id": 292117888, "name": "K-bot-T2",        "label": "Coder-B"},
+    "auditor":      {"login": "K-bot-T3",      "id": 292116934, "name": "K-bot-T3",        "label": "Auditor"},
+    "orchestrator": {"login": "KevinGastelum", "id": 97716634,  "name": "Kevin Gastelum", "label": "Orchestrator"}
+  },
+  "routes": [
+    {"role": "auditor", "globs": ["**/*.test.*", "**/*.spec.*", "tests/**", "__tests__/**", "test/**", "**/__snapshots__/**"]},
+    {"role": "captain", "globs": ["docs/**", "packages/*/docs/**", "agents/**"]},
+    {"role": "coder",   "globs": ["src/**", "packages/*/src/**"], "rotate": ["coder-a", "coder-b"]},
+    {"role": "orchestrator", "globs": ["**"]}
+  ]
+}
