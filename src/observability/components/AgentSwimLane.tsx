@@ -55,8 +55,9 @@ function getActiveConfig(container: HTMLElement | null): ChartConfig {
 export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSwimLaneProps) {
   const { containerRef } = useObsTheme();
 
-  const appName = agentName.split(":")[0];
-  const sessionId = agentName.split(":")[1];
+  const colonIdx = agentName.lastIndexOf(":");
+  const appName = colonIdx === -1 ? agentName : agentName.slice(0, colonIdx);
+  const sessionId = colonIdx === -1 ? "" : agentName.slice(colonIdx + 1);
 
   const modelName = useMemo(() => {
     for (let i = events.length - 1; i >= 0; i--) {
