@@ -70,6 +70,7 @@ function matchesFilters(item: Record<string, unknown>, activeFilters: readonly s
 
   for (const f of activeFilters) {
     if (TOOL_FILTER_TYPES.has(f)) {
+      if (typeof item.content === "string" && item.content.includes(f)) return true;
       const msg = item.message as Record<string, unknown> | undefined;
       if (msg && Array.isArray(msg.content)) {
         const found = (msg.content as Record<string, unknown>[]).some(
