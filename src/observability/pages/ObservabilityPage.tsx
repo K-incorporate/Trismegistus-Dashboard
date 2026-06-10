@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ObservabilityThemeProvider, useObsTheme } from "@/observability/ObservabilityThemeProvider";
 import { useObservabilityWebSocket } from "@/observability/hooks/useObservabilityWebSocket";
+import { AgentSwimLaneContainer } from "@/observability/components/AgentSwimLaneContainer";
 import { EventTimeline } from "@/observability/components/EventTimeline";
 import { FilterPanel } from "@/observability/components/FilterPanel";
 import { LivePulseChart } from "@/observability/components/LivePulseChart";
@@ -26,7 +27,6 @@ function ObservabilityInner() {
   const toastIdRef = useRef(0);
   const prevConnectedRef = useRef<boolean | null>(null);
 
-  void selectedAgentLanes; // reserved for Phase 6 lane filtering
   void currentTimeRange;
 
   const addToast = useCallback((message: string, type: ToastItem["type"] = "info") => {
@@ -111,6 +111,15 @@ function ObservabilityInner() {
         onUpdateAllApps={setAllAppNames}
         onUpdateTimeRange={setCurrentTimeRange}
       />
+
+      {selectedAgentLanes.length > 0 && (
+        <AgentSwimLaneContainer
+          selectedAgents={selectedAgentLanes}
+          events={events}
+          timeRange={currentTimeRange}
+          onSelectedAgentsChange={setSelectedAgentLanes}
+        />
+      )}
 
       {showFilters && <FilterPanel filters={filters} onFiltersChange={setFilters} />}
 
