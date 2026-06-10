@@ -6,6 +6,7 @@ import { EventTimeline } from "@/observability/components/EventTimeline";
 import { FilterPanel } from "@/observability/components/FilterPanel";
 import { LivePulseChart } from "@/observability/components/LivePulseChart";
 import { StickScrollButton } from "@/observability/components/StickScrollButton";
+import { ThemeManager } from "@/observability/components/ThemeManager";
 import { ToastNotification } from "@/observability/components/ToastNotification";
 import type { ToastItem } from "@/observability/components/ToastNotification";
 import type { ObsFilters, TimeRange } from "@/observability/lib/types";
@@ -19,6 +20,7 @@ function ObservabilityInner() {
   const [stickToBottom, setStickToBottom] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedAgentLanes, setSelectedAgentLanes] = useState<string[]>([]);
+  const [showThemeManager, setShowThemeManager] = useState(false);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [allAppNames, setAllAppNames] = useState<string[]>([]);
   const [uniqueAppNames, setUniqueAppNames] = useState<string[]>([]);
@@ -97,6 +99,12 @@ function ObservabilityInner() {
           </button>
           <button
             className="text-xs px-2 py-1 rounded border border-[var(--theme-border-primary)] text-[var(--theme-text-secondary)] hover:border-[var(--theme-primary)] transition-colors"
+            onClick={() => setShowThemeManager(true)}
+          >
+            🎨 Theme
+          </button>
+          <button
+            className="text-xs px-2 py-1 rounded border border-[var(--theme-border-primary)] text-[var(--theme-text-secondary)] hover:border-[var(--theme-primary)] transition-colors"
             onClick={clearEvents}
           >
             Clear
@@ -135,6 +143,7 @@ function ObservabilityInner() {
 
       <StickScrollButton stickToBottom={stickToBottom} onToggle={() => setStickToBottom((v) => !v)} />
       <ToastNotification toasts={toasts} onDismiss={dismissToast} />
+      <ThemeManager isOpen={showThemeManager} onClose={() => setShowThemeManager(false)} />
     </div>
   );
 }
