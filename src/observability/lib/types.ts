@@ -58,9 +58,9 @@ export interface HookEvent {
 }
 
 export interface FilterOptions {
-  sourceApps: string[];
-  sessionIds: string[];
-  eventTypes: string[];
+  source_apps: string[];
+  session_ids: string[];
+  hook_event_types: string[];
 }
 
 // WebSocket message types

@@ -1,0 +1,1 @@
+export { useObsTheme } from "./ObservabilityThemeProvider";

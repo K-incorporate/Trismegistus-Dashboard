@@ -43,14 +43,12 @@ export function getColorForApp(appName: string): string {
 export function getGradientForSession(sessionId: string): string {
   const base = getColorForSession(sessionId);
   const color = base.replace("bg-", "").replace("-500", "");
-  if (color === "bg-gray") return "from-gray-500 to-gray-600";
   return `from-${color}-500 to-${color}-600`;
 }
 
 export function getGradientForApp(appName: string): string {
   const base = getColorForApp(appName);
   const color = base.replace("bg-", "").replace("-500", "");
-  if (color === "bg-gray") return "from-gray-500 to-gray-600";
   return `from-${color}-500 to-${color}-600`;
 }
 
