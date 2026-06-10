@@ -9,6 +9,7 @@ import { StickScrollButton } from "@/observability/components/StickScrollButton"
 import { ThemeManager } from "@/observability/components/ThemeManager";
 import { ToastNotification } from "@/observability/components/ToastNotification";
 import type { ToastItem } from "@/observability/components/ToastNotification";
+import { useHITLNotifications } from "@/observability/hooks/useHITLNotifications";
 import type { ObsFilters, TimeRange } from "@/observability/lib/types";
 import "@/observability/styles/observability-themes.css";
 
@@ -25,6 +26,7 @@ function ObservabilityInner() {
   const [allAppNames, setAllAppNames] = useState<string[]>([]);
   const [uniqueAppNames, setUniqueAppNames] = useState<string[]>([]);
   const [currentTimeRange, setCurrentTimeRange] = useState<TimeRange>("1m");
+  const { notifyHITLRequest } = useHITLNotifications();
   const seenAgents = useRef(new Set<string>());
   const toastIdRef = useRef(0);
   const prevConnectedRef = useRef<boolean | null>(null);
@@ -64,6 +66,14 @@ function ObservabilityInner() {
     }
     if (hasNew) setAllAppNames(Array.from(seenAgents.current));
   }, [events]);
+
+  useEffect(() => {
+    for (const event of events) {
+      if (event.humanInTheLoop) {
+        notifyHITLRequest(event);
+      }
+    }
+  }, [events, notifyHITLRequest]);
 
   const handleSelectAgent = useCallback((agentId: string) => {
     setSelectedAgentLanes((prev) =>
