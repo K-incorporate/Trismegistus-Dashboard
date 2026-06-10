@@ -159,6 +159,7 @@ export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSw
   useEffect(() => {
     if (events.length === 0) {
       processedIds.current.clear();
+      chartDataRef.current.clearData();
       return;
     }
     processNewEvents(events);
@@ -333,7 +334,6 @@ export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSw
         ref={chartContainerRef}
         className="relative w-full"
         style={{ height: `${CHART_HEIGHT}px` }}
-        aria-label={`Activity chart for ${appName} (session: ${sessionId})`}
       >
         <canvas
           ref={canvasRef}
@@ -342,6 +342,7 @@ export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSw
           className="block w-full"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          aria-label={`Activity chart for ${appName} (session: ${sessionId})`}
         />
         {!hasData && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
