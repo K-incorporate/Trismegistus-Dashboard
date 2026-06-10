@@ -1,8 +1,11 @@
 // Human-in-the-loop types
 export interface HumanInTheLoop {
   question: string;
-  mode: "question" | "permission" | "choice";
+  type: "question" | "permission" | "choice";
   choices?: string[];
+  responseWebSocketUrl?: string;
+  timeout?: number;
+  requiresResponse?: boolean;
 }
 
 export interface HumanInTheLoopResponse {
@@ -11,7 +14,11 @@ export interface HumanInTheLoopResponse {
   approved?: boolean;
 }
 
-export type HumanInTheLoopStatus = "pending" | "responded";
+export interface HumanInTheLoopStatus {
+  status: "pending" | "responded" | "timeout" | "error";
+  respondedAt?: number;
+  response?: HumanInTheLoopResponse;
+}
 
 // Token/cost tracking (§4.4)
 export interface AgentTokenUsage {

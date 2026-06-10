@@ -153,11 +153,11 @@ export function EventRow({
   }, [event.timestamp]);
 
   const hitl = event.humanInTheLoop;
-  const hitlPending = event.humanInTheLoopStatus === "pending";
+  const hitlPending = event.humanInTheLoopStatus?.status === "pending";
   const showHitl = !!hitl && (hitlPending || hasSubmittedResponse);
 
-  const hitlTypeEmoji = hitl ? (HITL_EMOJI[hitl.mode] ?? "❓") : "";
-  const hitlTypeLabel = hitl ? (HITL_LABEL[hitl.mode] ?? hitl.mode) : "";
+  const hitlTypeEmoji = hitl ? (HITL_EMOJI[hitl.type] ?? "❓") : "";
+  const hitlTypeLabel = hitl ? (HITL_LABEL[hitl.type] ?? hitl.type) : "";
   const permissionType = event.payload?.permission_type as string | null | undefined;
 
   const submitAnswer = async () => {
@@ -239,7 +239,7 @@ export function EventRow({
 
   // HITL block
   if (showHitl && hitl) {
-    const responded = hasSubmittedResponse || event.humanInTheLoopStatus === "responded";
+    const responded = hasSubmittedResponse || event.humanInTheLoopStatus?.status === "responded";
     const borderColor = responded ? "border-green-500" : "border-yellow-400";
     const gradBg = responded
       ? "from-green-950/30 to-transparent"
@@ -308,7 +308,7 @@ export function EventRow({
 
         {hitlPending && !hasSubmittedResponse && (
           <div onClick={(e) => e.stopPropagation()}>
-            {hitl.mode === "question" && (
+            {hitl.type === "question" && (
               <div className="flex gap-2">
                 <textarea
                   className="flex-1 resize-none rounded border border-[var(--theme-border-primary)] bg-[var(--theme-bg-secondary)] text-[var(--theme-text-primary)] text-sm p-2 min-h-[72px]"
@@ -326,7 +326,7 @@ export function EventRow({
                 </button>
               </div>
             )}
-            {hitl.mode === "permission" && (
+            {hitl.type === "permission" && (
               <div className="flex gap-2">
                 <button
                   className="px-4 py-1.5 rounded bg-green-600 hover:bg-green-500 text-white text-sm font-medium disabled:opacity-50"
@@ -344,7 +344,7 @@ export function EventRow({
                 </button>
               </div>
             )}
-            {hitl.mode === "choice" && hitl.choices && (
+            {hitl.type === "choice" && hitl.choices && (
               <div className="flex gap-2 flex-wrap">
                 {hitl.choices.map((c) => (
                   <button
