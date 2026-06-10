@@ -2,7 +2,6 @@
 # /// script
 # requires-python = ">=3.8"
 # dependencies = [
-#     "anthropic",
 #     "python-dotenv",
 # ]
 # ///
@@ -24,7 +23,6 @@ import argparse
 import urllib.request
 import urllib.error
 from datetime import datetime
-from utils.summarizer import generate_event_summary
 from utils.model_extractor import get_model_from_transcript
 
 def send_event_to_server(event_data, server_url='http://localhost:4000/events'):
@@ -142,7 +140,11 @@ def main():
     # reason: SessionEnd
     if 'reason' in input_data:
         event_data['reason'] = input_data['reason']
-    
+
+    # parent_session_id: SubagentStart, SubagentStop (derived from invoking session)
+    if 'parent_session_id' in input_data:
+        event_data['parent_session_id'] = input_data['parent_session_id']
+
     # Handle --add-chat option
     if args.add_chat and 'transcript_path' in input_data:
         transcript_path = input_data['transcript_path']
@@ -150,7 +152,7 @@ def main():
             # Read .jsonl file and convert to JSON array
             chat_data = []
             try:
-                with open(transcript_path, 'r') as f:
+                with open(transcript_path, 'r', encoding='utf-8') as f:
                     for line in f:
                         line = line.strip()
                         if line:
@@ -166,6 +168,7 @@ def main():
     
     # Generate summary if requested
     if args.summarize:
+        from utils.summarizer import generate_event_summary
         summary = generate_event_summary(event_data)
         if summary:
             event_data['summary'] = summary

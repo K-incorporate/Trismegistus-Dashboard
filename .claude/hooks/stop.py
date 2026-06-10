@@ -195,7 +195,7 @@ def main():
                 # Read .jsonl file and convert to JSON array
                 chat_data = []
                 try:
-                    with open(transcript_path, "r") as f:
+                    with open(transcript_path, "r", encoding="utf-8") as f:
                         for line in f:
                             line = line.strip()
                             if line:
