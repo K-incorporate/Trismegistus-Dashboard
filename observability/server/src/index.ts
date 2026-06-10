@@ -1,11 +1,15 @@
-import { initDatabase, insertEvent, getFilterOptions, getRecentEvents, updateEventHITLResponse } from "./db";
+import { initDatabase, insertEvent, getFilterOptions, getRecentEvents, updateEventHITLResponse, updateEventTokens } from "./db";
 import type { HookEvent, HumanInTheLoopResponse } from "./types";
 import {
   createTheme, updateThemeById, getThemeById, searchThemes,
   deleteThemeById, exportThemeById, importTheme, getThemeStats,
 } from "./theme";
+import { parseTranscriptUsage } from "./enrichment";
 
 initDatabase();
+
+const TERMINAL_EVENTS = new Set(["SubagentStop", "Stop", "SessionEnd"]);
+const enrichedPaths = new Set<string>();
 
 const wsClients = new Set<import("bun").ServerWebSocket<unknown>>();
 
@@ -64,6 +68,27 @@ const server = Bun.serve({
 
         const msg = JSON.stringify({ type: "event", data: savedEvent });
         wsClients.forEach((c) => { try { c.send(msg); } catch { wsClients.delete(c); } });
+
+        if (TERMINAL_EVENTS.has(event.hook_event_type) && savedEvent.id != null) {
+          const tp =
+            savedEvent.agent_transcript_path ??
+            (typeof (savedEvent.payload as Record<string, unknown>)?.transcript_path === "string"
+              ? (savedEvent.payload as Record<string, unknown>).transcript_path as string
+              : undefined);
+          if (tp && !enrichedPaths.has(tp)) {
+            enrichedPaths.add(tp);
+            void (async () => {
+              const usage = await parseTranscriptUsage(tp);
+              if (!usage) return;
+              updateEventTokens(savedEvent.id!, usage);
+              const enriched = { ...savedEvent, tokens: usage };
+              const enrichMsg = JSON.stringify({ type: "event", data: enriched });
+              wsClients.forEach((c) => {
+                try { c.send(enrichMsg); } catch { wsClients.delete(c); }
+              });
+            })();
+          }
+        }
 
         return json(savedEvent);
       } catch {
