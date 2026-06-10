@@ -31,3 +31,9 @@ observability/server/events.db-shm
 observability/server/events.db-wal
 # Hook runtime data
 .claude/data/
+.claude/worktrees/
+# Python bytecode
+__pycache__/
+*.pyc
+# Temp/session scratch
+.tmp/
