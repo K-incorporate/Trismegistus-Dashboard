@@ -1,15 +1,113 @@
 {
+  "env": {
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONUTF8": "1"
+  },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_tool_use.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type PreToolUse --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/lint-changed.mjs\"",
-            "timeout": 60,
-            "statusMessage": "Linting changed file..."
-          }
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/lint-changed.mjs\"", "timeout": 60, "statusMessage": "Linting changed file..." }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/post_tool_use.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type PostToolUse --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/post_tool_use_failure.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type PostToolUseFailure --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/permission_request.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type PermissionRequest --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/notification.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type Notification --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/user_prompt_submit.py\" --log-only" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type UserPromptSubmit --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop.py\" --chat" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type Stop --add-chat --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/subagent_start.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type SubagentStart --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/subagent_stop.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type SubagentStop --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre_compact.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type PreCompact --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type SessionStart --server-url http://127.0.0.1:4000/events" }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_end.py\"" },
+          { "type": "command", "command": "uv run \"$CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py\" --source-app trismegistus-dashboard --event-type SessionEnd --server-url http://127.0.0.1:4000/events" }
         ]
       }
     ]
