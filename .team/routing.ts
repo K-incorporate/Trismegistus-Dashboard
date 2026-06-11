@@ -1,5 +1,6 @@
 // Pure routing logic for team-commit. No git, no process side effects.
-// Runs under Bun (uses Bun.Glob). Imported by team-commit.ts and tests.
+// Runs under Bun (uses Bun.Glob) or Node (uses fallback glob matcher). Imported by team-commit.ts and tests.
+import { existsSync, readFileSync } from "node:fs";
 
 export type RoleKey = "captain" | "coder-a" | "coder-b" | "auditor" | "orchestrator";
 export type RouteRole = "captain" | "coder" | "auditor" | "orchestrator";
@@ -50,11 +51,44 @@ export function authorOf(roleKey: RoleKey, roster: Roster): Author {
 }
 
 export async function loadRoster(path: string): Promise<Roster> {
-  const file = Bun.file(path);
-  if (!(await file.exists())) {
+  if (!existsSync(path)) {
     throw new Error(`no roster at ${path} — run team-init in this repo`);
   }
-  return (await file.json()) as Roster;
+  try {
+    return JSON.parse(readFileSync(path, "utf-8")) as Roster;
+  } catch (e: any) {
+    throw new Error(`failed to parse roster at ${path}: ${e.message}`);
+  }
+}
+
+// Helper to support glob matching in both Node and Bun
+function globMatch(pattern: string, path: string): boolean {
+  // @ts-ignore
+  if (typeof Bun !== "undefined") {
+    // @ts-ignore
+    return new Bun.Glob(pattern).match(path);
+  }
+  // Fallback for Node environment: convert simple glob pattern to RegExp
+  let regexStr = "";
+  for (let i = 0; i < pattern.length; i++) {
+    const c = pattern[i];
+    if (c === "*") {
+      if (pattern[i + 1] === "*") {
+        regexStr += ".*";
+        i++;
+      } else {
+        regexStr += "[^/]*";
+      }
+    } else if (c === "?") {
+      regexStr += "[^/]";
+    } else if (".+^$|()[]{}\\".includes(c)) {
+      regexStr += "\\" + c;
+    } else {
+      regexStr += c;
+    }
+  }
+  const regex = new RegExp(`^${regexStr}$`);
+  return regex.test(path);
 }
 
 // First-match-wins route resolution on a /-normalized path.
@@ -62,7 +96,7 @@ export function routeFile(path: string, routes: Route[]): RouteRole {
   const p = normalize(path);
   for (const route of routes) {
     for (const g of route.globs) {
-      if (new Bun.Glob(g).match(p)) return route.role;
+      if (globMatch(g, p)) return route.role;
     }
   }
   return "orchestrator"; // defensive; routes always end with a ** catch-all

@@ -1,5 +1,6 @@
-#!/usr/bin/env bun
+import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import process from "node:process";
 import {
   loadRoster,
   planCommits,
@@ -13,8 +14,8 @@ import {
 interface GitResult { code: number; out: string; err: string; }
 
 function git(args: string[], input?: Uint8Array): GitResult {
-  const p = Bun.spawnSync(["git", ...args], input ? { stdin: input } : {});
-  return { code: p.exitCode, out: p.stdout.toString(), err: p.stderr.toString() };
+  const p = spawnSync("git", args, { input });
+  return { code: p.status ?? 0, out: p.stdout ? p.stdout.toString() : "", err: p.stderr ? p.stderr.toString() : "" };
 }
 
 export function parseStatus(z: string): ChangedFile[] {
@@ -98,7 +99,7 @@ function commit(author: Author, msg: string): void {
 }
 
 async function main(): Promise<void> {
-  const args = parseArgs(Bun.argv.slice(2));
+  const args = parseArgs(process.argv.slice(2));
   const roster = await loadRoster(".team/roster.json");
   const files = changedFiles();
   if (files.length === 0) {
@@ -146,7 +147,13 @@ async function main(): Promise<void> {
   console.log("team-commit: done");
 }
 
-if (import.meta.main) {
+const isMain = process.argv[1] && (
+  process.argv[1].endsWith("team-commit.ts") ||
+  process.argv[1].endsWith("team-commit.js") ||
+  process.argv[1].endsWith("team-commit")
+);
+
+if (isMain) {
   main().catch((e: Error) => {
     console.error(`team-commit: ${e.message}`);
     process.exit(1);
