@@ -298,7 +298,6 @@ code { font-size: 0.875rem; }
 /* Custom styling for document browser card images */
 .woodcut-img {
   image-rendering: pixelated;
-  mix-blend-mode: color-burn;
   opacity: 0.85;
 }
 
