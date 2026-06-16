@@ -81,6 +81,16 @@ export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSw
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, agentName]);
 
+  const parentSessionId = useMemo(() => {
+    for (const e of events) {
+      if (e.source_app === appName && e.session_id.slice(0, 8) === sessionId && e.parent_session_id) {
+        return e.parent_session_id;
+      }
+    }
+    return null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, agentName]);
+
   const tokenRollup = useMemo(() => {
     let input = 0, output = 0, cost = 0, hasCost = false;
     for (const e of events) {
@@ -316,6 +326,16 @@ export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSw
             style={{ background: "var(--theme-bg-tertiary)", color: "var(--theme-text-secondary)" }}
           >
             {"\u{1F9E0}"} {formatModelName(modelName)}
+          </span>
+        )}
+
+        {parentSessionId && (
+          <span
+            className="text-xs px-1.5 py-0.5 rounded"
+            style={{ background: "var(--theme-bg-tertiary)", border: "1px solid var(--theme-border-secondary)", color: "var(--theme-text-tertiary)" }}
+            title={`Child of session ${parentSessionId}`}
+          >
+            {"↳"} {parentSessionId.slice(0, 8)}
           </span>
         )}
 

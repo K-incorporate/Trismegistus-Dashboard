@@ -406,6 +406,17 @@ export function EventRow({
                     {toolName}
                   </span>
                 )}
+                {event.agent_type && (
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-[var(--theme-bg-tertiary)] border border-[var(--theme-border-primary)] text-[var(--theme-text-tertiary)]">
+                    🤖 {event.agent_type}
+                  </span>
+                )}
+                {event.parent_session_id && (
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-[var(--theme-bg-tertiary)] border border-[var(--theme-border-secondary)] text-[var(--theme-text-tertiary)]"
+                    title={`Child of session ${event.parent_session_id}`}>
+                    ↳ {event.parent_session_id.slice(0, 8)}
+                  </span>
+                )}
                 <span className="text-xs text-[var(--theme-text-tertiary)] ml-auto tabular-nums">
                   {formattedTime}
                 </span>
@@ -462,6 +473,17 @@ export function EventRow({
                 {toolName && (
                   <span className="px-1.5 py-0.5 rounded border border-[var(--theme-primary)]/40 text-[var(--theme-primary)]">
                     {toolName}
+                  </span>
+                )}
+                {event.agent_type && (
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--theme-bg-tertiary)] border border-[var(--theme-border-primary)] text-[var(--theme-text-tertiary)]">
+                    🤖 {event.agent_type}
+                  </span>
+                )}
+                {event.parent_session_id && (
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--theme-bg-tertiary)] border border-[var(--theme-border-secondary)] text-[var(--theme-text-tertiary)]"
+                    title={`Child of session ${event.parent_session_id}`}>
+                    ↳ {event.parent_session_id.slice(0, 8)}
                   </span>
                 )}
               </div>
