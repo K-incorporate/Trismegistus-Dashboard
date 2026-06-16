@@ -37,3 +37,15 @@ __pycache__/
 *.pyc
 # Temp/session scratch
 .tmp/
+
+# Local configuration and environment files
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+
+# SQLite/DB exclusions
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
