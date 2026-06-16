@@ -5,16 +5,16 @@
 
 ---
 
-<p align="center">
+<!-- <p align="center">
   <img src="docs/images/sessions.png"alt="Trismegistus Sessions Hub" width="90%" style="border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 20px 45px rgba(0,0,0,0.5);" />
-</p>
+</p> -->
 
 ## ✨ The Control Plane, Re-imagined
 Trismegistus Dashboard is a decoupled frontend web app built to interface with the local **Hermes Agent** backend. The interface is meticulously crafted using HSL-tailored colors, smooth gradients, dynamic micro-animations, and glassmorphism elements to provide a state-of-the-art developer control deck.
-
+<!-- 
 ---
 
-## 🎨 Visual Showcase & Features
+## 🎨 Visual Showcase & Features -->
 
 ### 📂 Sessions Hub
 Manage all active and archived agent conversations. The Sessions panel features paginated list structures, title renaming, batch deletion utilities, and full-text search index (FTS5) capabilities, wrapped in a beautiful dark teal canvas.
