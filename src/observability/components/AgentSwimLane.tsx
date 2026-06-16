@@ -35,6 +35,17 @@ function formatGap(ms: number): string {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
+function formatTokenCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`;
+  return String(n);
+}
+
+function formatCost(usd: number): string {
+  if (usd < 0.01) return `$${usd.toFixed(4)}`;
+  return `$${usd.toFixed(2)}`;
+}
+
 function getActiveConfig(container: HTMLElement | null): ChartConfig {
   const style = container ? getComputedStyle(container) : null;
   const get = (v: string) => style?.getPropertyValue(v).trim() || "";
@@ -67,6 +78,20 @@ export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSw
       }
     }
     return null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, agentName]);
+
+  const tokenRollup = useMemo(() => {
+    let input = 0, output = 0, cost = 0, hasCost = false;
+    for (const e of events) {
+      if (e.source_app !== appName || e.session_id.slice(0, 8) !== sessionId) continue;
+      if (!e.tokens) continue;
+      input += e.tokens.input_tokens ?? 0;
+      output += e.tokens.output_tokens ?? 0;
+      if (e.tokens.cost != null) { cost += e.tokens.cost; hasCost = true; }
+    }
+    const total = input + output;
+    return total > 0 ? { total, input, output, cost: hasCost ? cost : null } : null;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, agentName]);
 
@@ -320,6 +345,25 @@ export function AgentSwimLane({ agentName, events, timeRange, onClose }: AgentSw
         >
           {"\u{1F550}"} {hoveredBadge === "avgTime" ? `Avg Gap: ${formatGap(chartData.eventTimingMetrics.avgGapMs)}` : formatGap(chartData.eventTimingMetrics.avgGapMs)}
         </span>
+
+        {tokenRollup && (
+          <span
+            className="text-xs px-1.5 py-0.5 rounded cursor-default"
+            style={{ background: "var(--theme-bg-tertiary)", color: "var(--theme-text-secondary)" }}
+            title={`In: ${tokenRollup.input.toLocaleString()} · Out: ${tokenRollup.output.toLocaleString()}`}
+          >
+            {"\u{1F4CA}"} {formatTokenCount(tokenRollup.total)}
+          </span>
+        )}
+
+        {tokenRollup?.cost != null && (
+          <span
+            className="text-xs px-1.5 py-0.5 rounded cursor-default"
+            style={{ background: "var(--theme-bg-tertiary)", color: "var(--theme-text-secondary)" }}
+          >
+            {formatCost(tokenRollup.cost)}
+          </span>
+        )}
 
         <button
           className="ml-auto text-xs px-1.5 py-0.5 rounded transition-colors"
